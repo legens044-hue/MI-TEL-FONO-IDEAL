@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Título de la página</title>
+</head>
+<body>
+    ```html
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi teléfono ideal</title>
+  <style>
+    * { box-sizing: border-box }
+    body {
+      margin: 0; padding: 24px; font: 18px/1.5 system-ui, sans-serif;
+      color: #17324d; background: #f2f7fc;
+    }
+    main { max-width: 760px; margin: auto }
+    h1 { font-size: 2rem }
+    .card {
+      background: white; border-radius: 18px; padding: 22px;
+      margin: 16px 0; box-shadow: 0 4px 16px #17324d12;
+    }
+    button, select {
+      font: inherit; padding: 14px; border: 2px solid #aac3dc;
+      border-radius: 12px; background: white; color: inherit;
+    }
+    button { cursor: pointer; margin: 6px 4px 6px 0 }
+    button:hover, button:focus { background: #e6f3ff; border-color: #2878bd }
+    .primary { background: #1769aa; color: white; border-color: #1769aa }
+    label { display: block; margin: 16px 0 6px; font-weight: 650 }
+    .hidden { display: none }
+    .phone { border-top: 1px solid #dbe5ef; padding: 16px 0 }
+    .tag { display: inline-block; background: #e6f3ff; padding: 4px 10px; border-radius: 99px }
+  </style>
+</head>
+<body>
+<main>
+  <h1>📱 Mi teléfono ideal</h1>
+  <p>Encuentra un teléfono que se adapte a ti. Puedes cambiar tus respuestas cuando quieras.</p>
+
+  <section class="card">
+    <h2>Elige tu modo</h2>
+    <button class="primary" onclick="showMode('simple')">Modo sencillo</button>
+    <button onclick="showMode('expert')">Modo experto</button>
+  </section>
+
+  <section id="simple" class="card hidden">
+    <h2>¿Qué necesitas?</h2>
+    <label for="use">¿Para qué usarás más el teléfono?</label>
+    <select id="use">
+      <option value="todo">Un poco de todo</option>
+      <option value="fotos">Sacar fotos</option>
+      <option value="llamadas">Llamadas y mensajes</option>
+      <option value="videos">Ver videos y redes</option>
+    </select>
+
+    <label for="priority">¿Qué es lo más importante?</label>
+    <select id="priority">
+      <option value="facil">Que sea fácil de usar</option>
+      <option value="bateria">Que dure mucho la pila</option>
+      <option value="fotos">Que saque buenas fotos</option>
+      <option value="pantalla">Que tenga pantalla grande</option>
+      <option value="precio">Que cueste poco</option>
+    </select>
+
+    <label for="budget">¿Cuánto quieres gastar?</label>
+    <select id="budget">
+      <option value="3000">Hasta $3,000 pesos</option>
+      <option value="6000">Hasta $6,000 pesos</option>
+      <option value="10000">Hasta $10,000 pesos</option>
+      <option value="999999">Más de $10,000 pesos</option>
+    </select>
+
+    <label for="size">¿Qué tamaño prefieres?</label>
+    <select id="size">
+      <option value="cualquiera">No estoy seguro</option>
+      <option value="grande">Grande, para ver mejor</option>
+      <option value="ligero">Pequeño y ligero</option>
+    </select>
+    <p><button class="primary" onclick="recommend()">Ver recomendaciones</button></p>
+  </section>
+
+  <section id="expert" class="card hidden">
+    <h2>Busca por especificaciones</h2>
+    <label for="chip">Procesador</label>
+    <select id="chip">
+      <option value="cualquiera">Cualquiera</option>
+      <option>Snapdragon 8 Elite Gen 5</option>
+      <option>Snapdragon 8 Elite</option>
+      <option>Apple A19 Pro</option>
+      <option>MediaTek Dimensity 9400</option>
+    </select>
+    <label for="ram">Memoria RAM mínima</label>
+    <select id="ram">
+      <option value="0">Cualquiera</option>
+      <option value="8">8 GB</option>
+      <option value="12">12 GB</option>
+      <option value="16">16 GB</option>
+    </select>
+    <p><button class="primary" onclick="expertSearch()">Buscar teléfonos</button></p>
+  </section>
+
+  <section id="results" class="card hidden" aria-live="polite"></section>
+</main>
+
+<script>
+  // Catálogo demostrativo: confirma modelos, precios y especificaciones
+  // antes de usarlo como guía de compra.
+  const phones = [
+    { name:"Samsung Galaxy A16", price:2800, battery:5000, camera:50,
+      screen:6.7, easy:true, chip:"MediaTek Helio G99", ram:4,
+      image:"📱", simple:"Opción económica para llamadas, mensajes y uso diario." },
+    { name:"Motorola Moto G Power", price:5200, battery:6000, camera:50,
+      screen:6.7, easy:true, chip:"MediaTek Dimensity 6300", ram:8,
+      image:"📱", simple:"Pantalla grande y batería de larga duración." },
+    { name:"Samsung Galaxy S25 Ultra", price:22000, battery:5000, camera:200,
+      screen:6.9, easy:false, chip:"Snapdragon 8 Elite", ram:12,
+      image:"📱", simple:"Cámaras avanzadas y pantalla grande; es una opción de precio alto." }
+  ];
+
+  function showMode(mode) {
+    document.getElementById("simple").classList.toggle("hidden", mode !== "simple");
+    document.getElementById("expert").classList.toggle("hidden", mode !== "expert");
+    document.getElementById("results").classList.add("hidden");
+  }
+
+  function recommend() {
+    const budget = Number(document.getElementById("budget").value);
+    const priority = document.getElementById("priority").value;
+    const matches = phones.filter(p => p.price <= budget).sort((a,b) => {
+      const score = p => priority === "bateria" ? p.battery :
+        priority === "fotos" ? p.camera :
+        priority === "pantalla" ? p.screen :
+        priority === "facil" ? (p.easy ? 10 : 0) :
+        -p.price;
+      return score(b) - score(a);
+    });
+    display(matches, false);
+  }
+
+  function expertSearch() {
+    const chip = document.getElementById("chip").value;
+    const ram = Number(document.getElementById("ram").value);
+    const matches = phones.filter(p =>
+      (chip === "cualquiera" || p.chip === chip) && p.ram >= ram
+    );
+    display(matches, true);
+  }
+
+  function display(list, expert) {
+    const box = document.getElementById("results");
+    box.classList.remove("hidden");
+    if (!list.length) {
+      box.innerHTML = "<h2>No encontramos coincidencias</h2><p>Prueba con otro presupuesto o especificación.</p>";
+      return;
+    }
+    box.innerHTML = "<h2>Teléfonos recomendados</h2>" + list.map(p => `
+      <article class="phone">
+        <div style="font-size:48px" aria-hidden="true">${p.image}</div>
+        <h3>${p.name} <span class="tag">$${p.price.toLocaleString("es-MX")} aprox.</span></h3>
+        <p>${p.simple}</p>
+        <p><strong>Pila:</strong> ${p.battery} mAh · <strong>Cámara principal:</strong> ${p.camera} MP · <strong>Pantalla:</strong> ${p.screen}"</p>
+        ${expert ? `<p><strong>Procesador:</strong> ${p.chip} · <strong>RAM:</strong> ${p.ram} GB</p>` : ""}
+      </article>`).join("");
+  }
+</script>
+</body>
+</html>
+```
+</body>
+</html>
